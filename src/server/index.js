@@ -2,6 +2,8 @@ const express = require('express');
 const MongoClient = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId; 
 const myParser = require("body-parser");
+const validate = require('express-validation');
+const validation = require('./validation');
 
 const app = express();
 
@@ -21,6 +23,10 @@ app.use(allowCrossDomain);
 app.use(express.static('dist'));
 app.use(myParser.json())
 app.use(myParser.urlencoded({extended : true}));
+
+app.use(function(err, req, res, next){
+    res.status(400).json(err);
+  });
 
 MongoClient.connect('mongodb://root:aLgGVCcIW6D5eRoRci@ds147411.mlab.com:47411/lightspeed-test', (err, database) => {
   if (err) {
@@ -44,7 +50,7 @@ app.get('/api/contacts', (req, res) => {
     })
 })
 
-app.post('/api/contacts', (req, res) => {
+app.post('/api/contacts', validate(validation.contact), (req, res) => {
     var myobj = req.body;
 
     console.log("body");
@@ -99,7 +105,7 @@ app.delete('/api/contacts/:id', (req, res) => {
     })
 })
 
-app.post('/api/contacts/:id', (req, res) => {
+app.post('/api/contacts/:id', validate(validation.contact), (req, res) => {
     const id = req.params.id;
 
     if (id === null || !ObjectId.isValid(id)) {

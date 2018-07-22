@@ -209,7 +209,7 @@ class App extends Component {
                     hasFeedback={true}
                   >
                     {getFieldDecorator('name', {
-                      rules: [{ required: true, message: ' ', whitespace: true}],
+                      rules: [{ required: true, message: 'Not valid', whitespace: true}],
                       initialValue: this.state.editableValues.name
                     })(
                       <Input/>
@@ -220,7 +220,7 @@ class App extends Component {
                     hasFeedback={true}
                   >
                     {getFieldDecorator('jobTitle', {
-                      rules: [{ required: true, message: ' ', whitespace: true}],
+                      rules: [{ required: true, message: 'Not valid', whitespace: true}],
                       initialValue: this.state.editableValues.jobTitle
                     })(
                       <Input/>
@@ -231,7 +231,7 @@ class App extends Component {
                     hasFeedback={true}
                   >
                     {getFieldDecorator('address', {
-                      rules: [{ required: true, message: ' ', whitespace: true}],
+                      rules: [{ required: true, message: 'Not valid', whitespace: true}],
                       initialValue: this.state.editableValues.address
                     })(
                       <Input/>
@@ -242,7 +242,12 @@ class App extends Component {
                     hasFeedback={true}
                   >
                     {getFieldDecorator('phoneNumber', {
-                      rules: [{ required: true, message: ' ', whitespace: true}],
+                      rules: [{ 
+                        required: true, 
+                        message: 'Not valid, must follow XXX-XXX-XXXX', 
+                        whitespace: true,
+                        pattern: new RegExp(/^\d{3}-\d{3}-\d{4}$/)
+                      }],
                       initialValue: this.state.editableValues.phoneNumber
                     })(
                       <Input/>
@@ -253,10 +258,10 @@ class App extends Component {
                     hasFeedback={true}
                   >
                     {getFieldDecorator('email', {
-                      rules: [{ required: true, message: ' ', whitespace: true}],
-                      initialValue: this.state.editableValues.email
+                      rules: [{ required: true, message: 'not a valid email', whitespace: true, type: 'email'}],
+                      initialValue: this.state.editableValues.email,
                     })(
-                      <Input type="email"/>
+                      <Input />
                     )}
                   </FormItem>
                 </Form> 
