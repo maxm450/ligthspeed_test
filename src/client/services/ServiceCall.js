@@ -2,8 +2,8 @@ class ServiceCall {
     constructor(method) {
         this.method = method || 'GET'; //default method
         this.timeout = 60000;
-        this.server = window.location.protocol + '//' + window.location.hostname + ":" + 8080;
-        this.URI = '/api/contacts';
+        this.server = "/api/contacts";
+        this.URI = '';
         this.request = {};
 
         this._prepareRequest();

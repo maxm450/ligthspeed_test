@@ -18,7 +18,7 @@ export function createContact(payload) {
 export function getContactFromId(id) {
 	const service  = new ServiceCall();
 
-	service.URI = `${service.URI}/${id}`;
+	service.URI = `/${id}`;
 
 	return service.makeCall();
 }
@@ -27,7 +27,7 @@ export function deleteContact(id) {
 	const method  = 'DELETE';
 	const service  = new ServiceCall(method);
 
-	service.URI = `${service.URI}/${id}`;
+	service.URI = `/${id}`;
 
 	return service.makeCall();
 }
@@ -36,7 +36,7 @@ export function updateContact(id, payload) {
 	const method  = 'POST';
 	const service  = new ServiceCall(method);
 
-	service.URI = `${service.URI}/${id}`;
+	service.URI = `/${id}`;
 
 	return service.makeCall(payload);
 }
