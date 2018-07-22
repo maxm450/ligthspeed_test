@@ -197,7 +197,8 @@ class App extends Component {
             </Row>
 
             <Modal
-              title="Basic Modal"
+              title={this.state.isEditting ? "Edit contact" : "Create contact"}
+              okText={this.state.isEditting ? "Edit" : "Create"}
               visible={this.state.modalVisible}
               onOk={this.handleOk}
               onCancel={this.handleCancel}
@@ -267,7 +268,6 @@ class App extends Component {
                 </Form> 
               </div> 
             </Modal>
-
           </Layout>
       </Layout>
     );
