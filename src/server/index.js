@@ -5,7 +5,21 @@ const myParser = require("body-parser");
 
 const app = express();
 
+var allowCrossDomain = function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+    // intercept OPTIONS method
+    if ('OPTIONS' == req.method) {
+        res.sendStatus(200);
+    } else {
+        next();
+    }
+};
+    
+app.use(allowCrossDomain);
 app.use(express.static('dist'));
+app.use(myParser.json())
 app.use(myParser.urlencoded({extended : true}));
 
 MongoClient.connect('mongodb://root:aLgGVCcIW6D5eRoRci@ds147411.mlab.com:47411/lightspeed-test', (err, database) => {
@@ -33,9 +47,7 @@ app.get('/api/contacts', (req, res) => {
 app.post('/api/contacts', (req, res) => {
     var myobj = req.body;
 
-    console.log("debug");
-    console.log(req);
-    console.log("debug2");
+    console.log("body");
     console.log(myobj);
 
     db.collection('contacts').insertOne(myobj, function(err, result) {
@@ -43,8 +55,10 @@ app.post('/api/contacts', (req, res) => {
             res.status(400);
         }
 
-        res.status(200).send({contact: result});
-  });
+        console.log(result);
+
+        res.status(200).send({contact: result.ops[0]});
+    });
 })
 
 app.get('/api/contacts/:id', (req, res) => {
@@ -88,10 +102,6 @@ app.delete('/api/contacts/:id', (req, res) => {
 app.post('/api/contacts/:id', (req, res) => {
     const id = req.params.id;
 
-    var myobj = req.body;
-    console.log("debug2");
-    console.log(myobj);
-
     if (id === null || !ObjectId.isValid(id)) {
         res.status(400).send({message: "bad request"});
         return;
@@ -104,6 +114,6 @@ app.post('/api/contacts/:id', (req, res) => {
             res.status(400);
         }
 
-        res.status(200).send({contact: result.length > 0 ? result[0] : {}});
+        res.status(200).send({contact: req.body});
     });
 })
