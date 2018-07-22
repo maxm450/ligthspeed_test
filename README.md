@@ -1,5 +1,8 @@
 Base webpack structure was take from https://github.com/crsandeep/simple-react-full-stack
 
+and ui archirecture used ant-design
+https://ant.design/
+
 To run the app, `npm run dev` is enough. It will run both api and app servers.
 
 The JSON structure needs to look like this: 

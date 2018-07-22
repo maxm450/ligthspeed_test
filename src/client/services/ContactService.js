@@ -10,8 +10,6 @@ export function createContact(payload) {
 	const method  = 'POST';
 	const service  = new ServiceCall(method);
 
-	debugger;
-
 	return service.makeCall(payload);
 }
 
