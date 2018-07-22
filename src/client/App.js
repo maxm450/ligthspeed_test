@@ -168,8 +168,13 @@ class App extends Component {
                   key="name"
                 />
                 <Column
+                  title="Phone number"
+                  dataIndex="phoneNumber"
+                  key="phoneNumber"
+                />
+                <Column
                   title="Email"
-                  dataIndex="Email"
+                  dataIndex="email"
                   key="email"
                 />
                 <Column
@@ -251,7 +256,7 @@ class App extends Component {
                       rules: [{ required: true, message: ' ', whitespace: true}],
                       initialValue: this.state.editableValues.email
                     })(
-                      <Input/>
+                      <Input type="email"/>
                     )}
                   </FormItem>
                 </Form> 
