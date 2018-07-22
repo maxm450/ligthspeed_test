@@ -19,6 +19,37 @@ export default class App extends Component {
     }).catch(err => alert(err));
   }
 
+  deleteRecord = (id) => {
+    deleteContact(id).then(() => {
+      notification.success({
+        message: '',
+        description: 'Record deleted succesfully',
+        duration: 4.5,
+      });
+
+      const contacts = this.state.contacts;
+
+      const index = contacts.findIndex((elem) => {
+        return elem._id === id;
+      });
+
+      if (index > -1) {
+        contacts.splice(index, 1);
+
+        this.setState({
+          contacts
+        })
+      }
+    }).catch(err => {
+      console.log(err);
+      notification.error({
+        message: '',
+        description: 'Enable to delete record',
+        duration: 4.5,
+      });
+    });
+  }
+
 
   render() {
     return (
