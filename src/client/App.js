@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { Form, Layout, Row, notification, Button, Modal, Input, Upload, Icon } from 'antd';
+import { Form, Layout, Row, notification, Button, Modal, Input, Upload, Icon, message  } from 'antd';
 import {getContacts, deleteContact, createContact, updateContact} from "./services/ContactService";
 
 import ContactList from './components/ContactList';
@@ -9,6 +9,12 @@ import "./app.css";
 
 const { Header } = Layout;
 const FormItem = Form.Item;
+
+function getBase64(img, callback) {
+  const reader = new FileReader();
+  reader.addEventListener('load', () => callback(reader.result));
+  reader.readAsDataURL(img);
+}
 
 class App extends Component {
   constructor(props) {
@@ -61,7 +67,7 @@ class App extends Component {
       const contacts = this.state.contacts;
 
       const index = contacts.findIndex((elem) => {
-        return elem._id === id;
+        return elem._id === record._id;
       });
 
       if (index > -1) {
@@ -72,7 +78,6 @@ class App extends Component {
         })
       }
     }).catch(err => {
-      console.log(err);
       notification.error({
         message: '',
         description: 'Enable to delete record',
@@ -84,13 +89,23 @@ class App extends Component {
   handleCancel = () => {
     this.props.form.resetFields();
     this.setState({
-      modalVisible: false
+      modalVisible: false,
+      imageUrl: null
     });
   };
 
   handleOk = () => {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        if (values.avatar && values.avatar.file) {
+          values.avatar = values.avatar.file.name;
+        }
+
+        values.phoneNumbers = [
+          {number: values.primaryPhoneNumber},
+          {number: values.secondaryPhoneNumber}
+        ]
+          
         if (this.state.isEditting) {
           const id = this.state.editableValues._id;
           const contacts = this.state.contacts;
@@ -114,7 +129,6 @@ class App extends Component {
               })
             }
           }).catch(err => {
-            console.log(err);
             notification.error({
               message: '',
               description: 'Enable to update record',
@@ -122,7 +136,7 @@ class App extends Component {
             });
           });
         } else {
-          createContact(values).then((values) => {
+          createContact(values).then((record) => {
             notification.success({
               message: '',
               description: 'Record added succesfully',
@@ -136,7 +150,6 @@ class App extends Component {
               contacts
             });
           }).catch(err => {
-            console.log(err);
             notification.error({
               message: '',
               description: 'Enable to add record',
@@ -150,9 +163,33 @@ class App extends Component {
     });    
   }
 
+  handleChange = (info) => {
+    if (info.file.status === 'uploading') {
+      this.setState({ loading: true });
+      return;
+    }
+    if (info.file.status === 'done') {
+      // Get this url from response in real world.
+      getBase64(info.file.originFileObj, imageUrl => this.setState({
+        imageUrl,
+        loading: false,
+      }));
+    }
+  }
+
   render() {
     const { getFieldDecorator } = this.props.form;
-    const beforeUpload = () => {};
+    function beforeUpload(file) {
+      const isJPG = file.type === 'image/jpeg';
+      if (!isJPG) {
+        message.error('You can only upload JPG file!');
+      }
+      const isLt2M = file.size / 1024 / 1024 < 2;
+      if (!isLt2M) {
+        message.error('Image must smaller than 2MB!');
+      }
+      return isJPG && isLt2M;
+    }
     const uploadButton = (
       <div>
         <Icon type={this.state.loading ? 'loading' : 'plus'} />
@@ -202,7 +239,11 @@ class App extends Component {
                           beforeUpload={beforeUpload}
                           onChange={this.handleChange}
                         >
-                          {imageUrl ? <img src={imageUrl} alt="avatar" /> : uploadButton}
+                          {imageUrl ? (
+                            <img src={imageUrl} alt="avatar" />
+                          ) : this.state.editableValues.avatar ? (
+                            <img src={`/public/images/${this.state.editableValues.avatar}`} alt="avatar" />
+                          ) : uploadButton}
                         </Upload>
                     )}
                   </FormItem>
@@ -215,7 +256,7 @@ class App extends Component {
                       rules: [{ required: true, message: 'Not valid', whitespace: true}],
                       initialValue: this.state.editableValues.name
                     })(
-                      <Input/>
+                      <Input maxLength={80}/>
                     )}
                   </FormItem>
                   <FormItem
@@ -237,14 +278,14 @@ class App extends Component {
                       rules: [{ required: true, message: 'Not valid', whitespace: true}],
                       initialValue: this.state.editableValues.address
                     })(
-                      <Input/>
+                      <Input maxLength={80}/>
                     )}
                   </FormItem>
                   <FormItem
-                    label="Phone number"
+                    label="Primary phone number"
                     hasFeedback={true}
                   >
-                    {getFieldDecorator('phoneNumber', {
+                    {getFieldDecorator('primaryPhoneNumber', {
                       rules: [{ 
                         required: true, 
                         message: 'Not valid, must follow XXX-XXX-XXXX', 
@@ -253,7 +294,22 @@ class App extends Component {
                       }],
                       initialValue: this.state.editableValues.phoneNumber
                     })(
-                      <Input/>
+                      <Input maxLength={12}/>
+                    )}
+                  </FormItem>
+                  <FormItem
+                    label="Secondary phone number"
+                    hasFeedback={true}
+                  >
+                    {getFieldDecorator('secondaryPhoneNumber', {
+                      rules: [{ 
+                        message: 'Not valid, must follow XXX-XXX-XXXX', 
+                        whitespace: true,
+                        pattern: new RegExp(/^\d{3}-\d{3}-\d{4}$/)
+                      }],
+                      initialValue: this.state.editableValues.phoneNumber
+                    })(
+                      <Input maxLength={12}/>
                     )}
                   </FormItem>
                   <FormItem
@@ -264,7 +320,7 @@ class App extends Component {
                       rules: [{ required: true, message: 'not a valid email', whitespace: true, type: 'email'}],
                       initialValue: this.state.editableValues.email,
                     })(
-                      <Input />
+                      <Input maxLength={80}/>
                     )}
                   </FormItem>
                 </Form> 

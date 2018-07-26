@@ -15,11 +15,11 @@ class ContactList extends Component {
   }
 
   editRecord = (record) => {
-      this.props.editRecord(record);
+      this.props.onEdit(record);
   }
 
   deleteRecord = (record) => {
-    this.props.deleteRecord(record);
+    this.props.onDelete(record);
   }
 
   render() {
@@ -33,8 +33,9 @@ class ContactList extends Component {
                 />
                 <Column
                   title="Phone number"
-                  dataIndex="phoneNumber"
-                  key="phoneNumber"
+                  dataIndex="phoneNumbers"
+                  key="phoneNumbers"
+                  render={numbers => <span>{numbers[0].number}</span>}
                 />
                 <Column
                   title="Email"
