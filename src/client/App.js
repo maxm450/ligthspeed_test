@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { Form, Layout, Row, notification, Button, Modal, Input } from 'antd';
+import { Form, Layout, Row, notification, Button, Modal, Input, Upload, Icon } from 'antd';
 import {getContacts, deleteContact, createContact, updateContact} from "./services/ContactService";
 
 import ContactList from './components/ContactList';
@@ -122,7 +122,7 @@ class App extends Component {
             });
           });
         } else {
-          createContact(values).then((record) => {
+          createContact(values).then((values) => {
             notification.success({
               message: '',
               description: 'Record added succesfully',
@@ -152,7 +152,14 @@ class App extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-
+    const beforeUpload = () => {};
+    const uploadButton = (
+      <div>
+        <Icon type={this.state.loading ? 'loading' : 'plus'} />
+        <div className="ant-upload-text">Upload</div>
+      </div>
+    );
+    const imageUrl = this.state.imageUrl;
     return (
       <Layout>
           <Header />
@@ -179,6 +186,27 @@ class App extends Component {
             >
               <div>
                <Form layout="vertical" onSubmit={this.handleSubmit}> 
+               <FormItem
+                    label="Avatar"
+                    hasFeedback={true}
+                  >
+                    {getFieldDecorator('avatar', {
+                      initialValue: this.state.editableValues.imageUrl
+                    })(
+                      <Upload
+                          name="avatar"
+                          listType="picture-card"
+                          className="avatar-uploader"
+                          showUploadList={false}
+                          action="/api/contacts/avatar"
+                          beforeUpload={beforeUpload}
+                          onChange={this.handleChange}
+                        >
+                          {imageUrl ? <img src={imageUrl} alt="avatar" /> : uploadButton}
+                        </Upload>
+                    )}
+                  </FormItem>
+
                   <FormItem
                     label="Name"
                     hasFeedback={true}

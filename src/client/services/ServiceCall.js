@@ -14,7 +14,7 @@ class ServiceCall {
         this.request = {
             method: this.method,
             headers: new Headers({
-                'Content-Type': 'application/json'
+                'Content-Type': 'multipart/form-data'
             })
         }
     }

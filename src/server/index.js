@@ -3,6 +3,9 @@ const MongoClient = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId; 
 const myParser = require("body-parser");
 const validate = require('express-validation');
+const multer  = require('multer')
+
+const upload = multer({ dest: './uploads/' })
 const validation = require('./validation');
 
 const app = express();
@@ -28,17 +31,21 @@ app.use(function(err, req, res, next){
     res.status(400).json(err);
   });
 
-MongoClient.connect('mongodb://root:aLgGVCcIW6D5eRoRci@ds147411.mlab.com:47411/lightspeed-test', (err, database) => {
-  if (err) {
-    return console.log(err)
-  }
+// MongoClient.connect('mongodb://root:aLgGVCcIW6D5eRoRci@ds147411.mlab.com:47411/lightspeed-test', (err, database) => {
+//   if (err) {
+//     return console.log(err)
+//   }
 
-  db = database.db("lightspeed-test");
+//   db = database.db("lightspeed-test");
 
-  app.listen(8080, () => {
+//   app.listen(8080, () => {
+//     console.log('listening on 8080')
+//   })
+// });
+
+app.listen(8080, () => {
     console.log('listening on 8080')
   })
-});
 
 app.get('/api/contacts', (req, res) => {
     db.collection('contacts').find().toArray((err, result) => {
@@ -50,11 +57,13 @@ app.get('/api/contacts', (req, res) => {
     })
 })
 
-app.post('/api/contacts', validate(validation.contact), (req, res) => {
+app.post('/api/contacts', upload.single('avatar'), (req, res) => {
     var myobj = req.body;
 
     console.log("body");
     console.log(myobj);
+
+    console.log('Uploaded: ', req.file);
 
     db.collection('contacts').insertOne(myobj, function(err, result) {
         if (err) {
@@ -65,6 +74,10 @@ app.post('/api/contacts', validate(validation.contact), (req, res) => {
 
         res.status(200).send({contact: result.ops[0]});
     });
+})
+
+app.post('/api/contacts/avatar', upload.single('avatar'), (req, res) => {
+    //console.log('Uploaded: ', req.file);
 })
 
 app.get('/api/contacts/:id', (req, res) => {
