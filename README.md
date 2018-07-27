@@ -16,7 +16,7 @@ The JSON structure needs to look like this:
     "phoneNumbers": [
         {
             number: "555-555-5555",
-            prefix: ""
+            type: ""
         }
     ],
     "email": "retrretrrte"
@@ -27,5 +27,5 @@ where:
 - `name` is a String
 - `jobTitle` is a string
 - `address` is a string
-- `phoneNumbers` is an Array of Phone, where Phone contains 2 elements. Number and siffix where both are Strings
+- `phoneNumbers` is an Array of Phone, where Phone contains 2 elements, `number` and `type` where both are Strings
 - `email` is a String
